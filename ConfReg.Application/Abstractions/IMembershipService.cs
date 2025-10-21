@@ -13,7 +13,7 @@ namespace ConfReg.Application.Abstractions
         Task<MembershipResponse> GetByIdAsync(long id);
         Task<IList<MembershipResponse>> GetAllAsync();
         Task InsertAsync(CreateMembershipRequest request);
-        Task UpdateAsync(EditConferenceRequest request);
+        Task UpdateAsync(EditMembershipRequest request);
         void DeleteAsync(long id);
     }
 }
