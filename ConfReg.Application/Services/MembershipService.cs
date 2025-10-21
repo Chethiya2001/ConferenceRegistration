@@ -57,14 +57,14 @@ namespace ConfReg.Application.Services
             throw new Exception();
         }
 
-        public async Task UpdateAsync(EditConferenceRequest request)
+        public async Task UpdateAsync(EditMembershipRequest request)
         {
             var findMembership = await membershipRepository.GetByIdAsync(request.Id);
             if (findMembership == null)
             {
                 throw new Exception("Not Found");
             }
-            var isSuccess = findMembership.Initialize(request.Title,request.RegistrationFee);
+            var isSuccess = findMembership.Initialize(request.Type,request.DiscountPercentage);
             if (isSuccess)
             {
                 await membershipRepository.UpdateAsync(findMembership);
@@ -73,5 +73,7 @@ namespace ConfReg.Application.Services
             throw new Exception();
 
         }
+
+       
     }
 }

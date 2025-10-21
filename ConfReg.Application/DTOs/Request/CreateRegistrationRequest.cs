@@ -8,8 +8,8 @@ namespace ConfReg.Application.DTOs.Request
 {
     public class CreateRegistrationRequest
     {
-        public int PersonId { get; set; }
-        public int ConferenceId { get; set; }
-        public int MembershipId { get;set; }
+        public long PersonId { get; set; }
+        public long ConferenceId { get; set; }
+        public long MembershipId { get;set; }
     }
 }

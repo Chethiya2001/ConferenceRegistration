@@ -15,10 +15,7 @@ namespace ConfReg.Application.Services
     {
         public async void DeleteAsync(long id)
         {
-           var payment = await paymentRepository.GetByIdAsync(id);
-            if (payment == null) {
-                throw new Exception();
-            }
+           var payment = await paymentRepository.GetByIdAsync(id) ?? throw new Exception();
             paymentRepository.Remove(payment);
             await unitOfWork.SaveChangesAsync();
 
@@ -62,11 +59,7 @@ namespace ConfReg.Application.Services
 
         public async Task UpdateAsync(EditPaymentRequest request)
         {
-            var findPayment = await paymentRepository.GetByIdAsync(request.Id);
-            if (findPayment  == null)
-            {
-                throw new Exception("Not Found user");
-            }
+            var findPayment = await paymentRepository.GetByIdAsync(request.Id) ?? throw new Exception("Not Found user");
             var isSuccess = findPayment.UpdatePayment( request.Amount, request.IsSuccessful);
             if (isSuccess)
             {

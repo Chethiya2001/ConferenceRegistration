@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace ConfReg.Domain.Entity
 {
-    public class Registration:BaseEntity
+    public class Registration :BaseEntity
 
     {
-        public int PersonId { get; private set; }
-        public int ConferenceId { get; private set; }
-        public int MembershipId { get; private set; }
+        public long PersonId { get; private set; }
+        public long ConferenceId { get; private set; }
+        public long MembershipId { get; private set; }
         public RegistrationStatus Status { get; private set; }
 
         public long RowVersion {  get; private set; } = 1;
@@ -20,7 +20,7 @@ namespace ConfReg.Domain.Entity
         public DateTime CreatedAt { get; private set; }
         public DateTime UpdatedAt { get; private set; }
 
-        public Registration(int personId, int conferenceId, int membershipId)
+        public bool Initialize(long personId, long conferenceId, long membershipId)
         {
             if (personId <= 0)
                 throw new ArgumentException("Invalid person ID.");
@@ -33,6 +33,7 @@ namespace ConfReg.Domain.Entity
             ConferenceId = conferenceId;
             MembershipId = membershipId;
             Status = RegistrationStatus.Pending;
+            return true;
         }
         //Behavs
 
@@ -52,7 +53,6 @@ namespace ConfReg.Domain.Entity
             UpdatedAt = DateTime.UtcNow;
         }
 
-        protected Registration() { }
 
     }
 }
