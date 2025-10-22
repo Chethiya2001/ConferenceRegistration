@@ -9,7 +9,7 @@ namespace ConfReg.Application.DTOs.Response
     public class PaymentResponse
     {
         public long Id { get; set; }
-        public int RegistrationId { get; set; }
+        public long RegistrationId { get; set; }
         public decimal Amount { get; set; }
         public bool PaymentStatus { get; set; }
     }

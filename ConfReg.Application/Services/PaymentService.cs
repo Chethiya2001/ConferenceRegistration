@@ -3,11 +3,6 @@ using ConfReg.Application.DTOs.Request;
 using ConfReg.Application.DTOs.Response;
 using ConfReg.Domain.Abstractions;
 using ConfReg.Domain.Entity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ConfReg.Application.Services
 {
@@ -48,7 +43,7 @@ namespace ConfReg.Application.Services
         public async Task InsertAsync(CreatePaymentRequest request)
         {
             var payment = new Payment();
-            var isSuccess = payment.Initialize(request.RegistrationId, request.Amount,request.IsSuccessful);
+            var isSuccess = payment.Initialize(request.RegistrationId, request.Amount);
             if (isSuccess)
             {
                 await paymentRepository.CreateAsync(payment);
@@ -60,7 +55,7 @@ namespace ConfReg.Application.Services
         public async Task UpdateAsync(EditPaymentRequest request)
         {
             var findPayment = await paymentRepository.GetByIdAsync(request.Id) ?? throw new Exception("Not Found user");
-            var isSuccess = findPayment.UpdatePayment( request.Amount, request.IsSuccessful);
+            var isSuccess = findPayment.UpdatePayment( request.Amount);
             if (isSuccess)
             {
                 await paymentRepository.UpdateAsync(findPayment);

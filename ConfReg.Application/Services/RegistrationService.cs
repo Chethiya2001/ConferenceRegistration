@@ -51,6 +51,8 @@ namespace ConfReg.Application.Services
         public async Task InsertAsync(CreateRegistrationRequest request)
         {
             var registration = new Registration();
+            var payment = new Payment();
+
             var person = await userRepository.GetByIdAsync(request.PersonId);
             if (person == null)
             {
@@ -67,15 +69,28 @@ namespace ConfReg.Application.Services
                 throw new Exception($"Not found Membership by this ID : {membership!.Id}");
             }
             var isSuccess = registration.Initialize(conference.Id,person.Id,membership.Id);
-            await registrationRepository.CreateAsync(registration);
-            await unitOfWork.SaveChangesAsync();
+            if (isSuccess)
+            {
+                await registrationRepository.CreateAsync(registration);
+                var isPaymentSuccess = payment.Initialize(registration.Id, conference.RegistrationFee);
+                if (isPaymentSuccess)
+                {
+                    registration.MarkAsPaid();
+                    await paymentRepository.CreateAsync(payment);
+                    await unitOfWork.SaveChangesAsync();
+                }
+                registration.Cancelled();
+
+            }
+        
+           
 
 
         }
 
         public Task UpdateAsync(EditRegistrationRequest request)
         {
-            throw new NotImplementedException();
+           throw new Exception();
         }
     }
 }

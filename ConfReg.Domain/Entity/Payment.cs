@@ -9,13 +9,13 @@ namespace ConfReg.Domain.Entity
     public class Payment:BaseEntity
     {
 
-        public int RegistrationId { get; private set; }
+        public long RegistrationId { get; private set; }
         public decimal Amount { get; private set; }
         public bool IsSuccessful { get; private set; }
         public DateTime CreatedAt { get; private set; }
         public DateTime UpdatedAt { get; private set; }
 
-        public bool Initialize(int registrationId, decimal amount, bool isSuccessful)
+        public bool Initialize(long registrationId, decimal amount)
         {
             if (registrationId <= 0)
                 throw new ArgumentException("Invalid registration ID.");
@@ -24,11 +24,11 @@ namespace ConfReg.Domain.Entity
           
             RegistrationId = registrationId;
             Amount = amount;
-            IsSuccessful = isSuccessful;
+            IsSuccessful = true;
             CreatedAt = DateTime.UtcNow;
             return true;
         }
-        public bool UpdatePayment( decimal amount, bool isSuccessful)
+        public bool UpdatePayment( decimal amount)
         {
            
             if (amount <= 0)
@@ -36,7 +36,7 @@ namespace ConfReg.Domain.Entity
 
            
             Amount = amount;
-            IsSuccessful = isSuccessful;
+            IsSuccessful = true;
            
             return true;
         }

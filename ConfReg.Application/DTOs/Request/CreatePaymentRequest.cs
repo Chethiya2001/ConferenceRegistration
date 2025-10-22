@@ -8,8 +8,8 @@ namespace ConfReg.Application.DTOs.Request
 {
     public class CreatePaymentRequest
     {
-        public int RegistrationId { get; set; }
+        public long RegistrationId { get; set; }
         public decimal Amount { get; set; }
-        public bool IsSuccessful { get; set; }
+       
     }
 }
