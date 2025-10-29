@@ -1,0 +1,55 @@
+<Project>
+  <Target Name="ValidateNoDependencies" BeforeTargets="Build">
+    
+    <!-- 1. Define project type variables -->
+    <PropertyGroup>
+        <IsCoreDomainProject>$(MSBuildProjectName.EndsWith('Core.Domain'))</IsCoreDomainProject>
+        <IsCoreProject>$(MSBuildProjectName.Contains('.Core.'))</IsCoreProject>
+        <BannedProjects>Infrastructure</BannedProjects>
+        <BannedNugets>Storage</BannedNugets>
+	      <BannedNamespaces>Storage</BannedNamespaces>
+    </PropertyGroup>	
+
+
+    <!-- 2. Core.Domain Projects - No package dependencies allowed -->
+    <!-- <Error Condition="'$(IsCoreDomainProject)' == 'true' and @(PackageReference->Count()) != 0" 
+           Text="Core.Domain project $(MSBuildProjectName) should not have any package dependencies. Found: @(PackageReference)" /> -->
+
+     <!-- 3. Core Projects - No banned NuGet packages allowed -->
+    <ItemGroup Condition="'$(IsCoreProject)' == 'true'">
+      <BannedNugetReferences Include="@(PackageReference)" Condition="$([System.String]::Copy('%(Identity)').Contains('$(BannedNugets)'))" />
+    </ItemGroup>
+    
+    <Error Condition="'$(IsCoreProject)' == 'true' and @(BannedNugetReferences->Count()) != 0"
+           Text="CLEAN ARCHITECTURE VIOLATION: Core project '$(MSBuildProjectName)' cannot reference infrastructure layer nugets. Remove: @(BannedNugetReferences)" />
+
+    <!-- 4. Fail if Core projects contain references to ".Infrastructure." packages -->
+    <ItemGroup Condition="'$(IsCoreProject)' == 'true'">
+      <InfrastructureProjectReferences Include="@(ProjectReference)" Condition="$([System.String]::Copy('%(Filename)').Contains('$(BannedProjects)'))" />
+    </ItemGroup>
+    
+    <Error Condition="'$(IsCoreProject)' == 'true' and @(InfrastructureProjectReferences->Count()) != 0"
+           Text="CLEAN ARCHITECTURE VIOLATION: Core project $(MSBuildProjectName) cannot reference infrastructure projects. Found: @(InfrastructureProjectReferences)" />
+
+    <!-- 5. Fail if Core projects contains Infrastructure references through transient references -->
+	<ItemGroup Condition="'$(IsCoreProject)' == 'true'">
+		<AllSourceFiles Include="**\*.cs" Exclude="**\obj\**" />
+	</ItemGroup>
+	  <ReadLinesFromFile Condition="'$(IsCoreProject)' == 'true'"
+							File="%(AllSourceFiles.Identity)">
+		  <Output TaskParameter="Lines" ItemName="FileLines" />
+	  </ReadLinesFromFile>
+	  <ItemGroup Condition="'$(IsCoreProject)' == 'true'">
+		  <_BannedUsingDirectives Include="@(FileLines->'%(Identity)')"
+								 Condition="$([System.String]::Copy('%(Identity)').StartsWith('using')) and 
+                                        $([System.String]::Copy('%(Identity)').Contains('.$(BannedNamespaces).'))" />
+	  </ItemGroup>
+
+	  <Error Condition="'$(IsCoreProject)' == 'true' and @(_BannedUsingDirectives->Count()) != 0"
+			 Text="CLEAN ARCHITECTURE VIOLATION: Core project '$(MSBuildProjectName)' cannot reference $(BannedNamespaces) namespaces. Remove:
+@(_BannedUsingDirectives, '%0a')" />
+	  
+
+  </Target>
+
+</Project>
